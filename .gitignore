@@ -1,0 +1,30 @@
+# Archivos generados por compilacion y Visual Studio
+.vs/
+.vscode/
+*.suo
+*.user
+*.VC.db
+*.VC.VC.opendb
+Debug/
+Release/
+x64/
+x86/
+out/
+build/
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.log
+
+# Paquetes y comprimidos de entrega
+*.zip
+*.rar
+
+# Archivos temporales
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Copia anidada del repositorio local; no subir
+/TB1-Algoritmos-Estructuras-2026-2/

@@ -1,20 +1,80 @@
-// TB1-Pinterest.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <limits>
+#include <string>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+using namespace std;
+
+void limpiarEntrada() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+void mostrarEncabezado() {
+    cout << "========================================\n";
+    cout << "   TB1 Pinterest - AED 2026-2\n";
+    cout << "========================================\n";
+}
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+void mostrarMenu() {
+    cout << "\nMenu principal\n";
+    cout << "1. Usuarios y tableros\n";
+    cout << "2. Pines y categorias\n";
+    cout << "3. Recomendaciones\n";
+    cout << "4. Ver requisitos del proyecto\n";
+    cout << "0. Salir\n";
+    cout << "Opcion: ";
+}
+
+void mostrarRequisitos() {
+    cout << "\nRequisitos base para el grupo Pinterest:\n";
+    cout << "- Lista simple: tableros.\n";
+    cout << "- Lista doble: categorias.\n";
+    cout << "- Cola: recomendaciones.\n";
+    cout << "- MergeSort: ordenar por popularidad.\n";
+    cout << "- Recursividad: similitud entre pines.\n";
+    cout << "- Archivos: colecciones y datos del sistema.\n";
+}
+
+void moduloPendiente(const string& nombreModulo) {
+    cout << "\n[Pendiente] Modulo: " << nombreModulo << "\n";
+    cout << "Cada integrante puede implementar aqui sus entidades, estructuras y metodos.\n";
+}
+
+int main() {
+    int opcion = -1;
+
+    mostrarEncabezado();
+
+    do {
+        mostrarMenu();
+
+        if (!(cin >> opcion)) {
+            limpiarEntrada();
+            cout << "Ingresa una opcion valida.\n";
+            continue;
+        }
+
+        switch (opcion) {
+        case 1:
+            moduloPendiente("Usuarios y tableros");
+            break;
+        case 2:
+            moduloPendiente("Pines y categorias");
+            break;
+        case 3:
+            moduloPendiente("Recomendaciones");
+            break;
+        case 4:
+            mostrarRequisitos();
+            break;
+        case 0:
+            cout << "\nSaliendo del sistema.\n";
+            break;
+        default:
+            cout << "Opcion no reconocida.\n";
+            break;
+        }
+    } while (opcion != 0);
+
+    return 0;
+}
