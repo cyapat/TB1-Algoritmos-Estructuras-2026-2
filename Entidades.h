@@ -1,13 +1,139 @@
-#ifndef ENTIDADES_H
-#define ENTIDADES_H
-
+#pragma once
 #include <iostream>
 #include <string>
 
 using namespace std;
 
 // ==========================================
-// 1. ENTIDAD: Categoria
+// 1. ENTIDAD: Usuario
+// ==========================================
+class Usuario {
+private:
+    int idUsuario;
+    string nombre;
+    string email;
+
+public:
+    Usuario() {
+        idUsuario = 0;
+        nombre = "";
+        email = "";
+    }
+
+    Usuario(int id, string nom, string mail) {
+        idUsuario = id;
+        nombre = nom;
+        email = mail;
+    }
+
+    int getIdUsuario() const { return idUsuario; }
+    string getNombre() const { return nombre; }
+    string getEmail() const { return email; }
+
+    void setIdUsuario(int id) { idUsuario = id; }
+    void setNombre(string nom) { nombre = nom; }
+    void setEmail(string mail) { email = mail; }
+
+    void mostrarInfo() const {
+        cout << "[Usuario #" << idUsuario << "] "
+             << nombre << " | Email: " << email << "\n";
+    }
+};
+
+
+// ==========================================
+// 2. ENTIDAD: Tablero
+// ==========================================
+class Tablero {
+private:
+    int idTablero;
+    int idUsuario;
+    string nombre;
+    bool esPrivado;
+
+public:
+    Tablero() {
+        idTablero = 0;
+        idUsuario = 0;
+        nombre = "";
+        esPrivado = false;
+    }
+
+    Tablero(int id, int idUser, string nom, bool privado) {
+        idTablero = id;
+        idUsuario = idUser;
+        nombre = nom;
+        esPrivado = privado;
+    }
+
+    int getIdTablero() const { return idTablero; }
+    int getIdUsuario() const { return idUsuario; }
+    string getNombre() const { return nombre; }
+    bool getEsPrivado() const { return esPrivado; }
+
+    void setIdTablero(int id) { idTablero = id; }
+    void setIdUsuario(int idUser) { idUsuario = idUser; }
+    void setNombre(string nom) { nombre = nom; }
+    void setEsPrivado(bool privado) { esPrivado = privado; }
+
+    void mostrarInfo() const {
+        cout << "[Tablero #" << idTablero << "] "
+             << nombre << " (User ID: " << idUsuario << ") "
+             << " | Visibilidad: " << (esPrivado ? "Privado" : "Publico") << "\n";
+    }
+};
+
+
+// ==========================================
+// 3. ENTIDAD: Pin
+// ==========================================
+class Pin {
+private:
+    int idPin;
+    int idTablero;
+    string titulo;
+    string urlImagen;
+    int guardados;
+
+public:
+    Pin() {
+        idPin = 0;
+        idTablero = 0;
+        titulo = "";
+        urlImagen = "";
+        guardados = 0;
+    }
+
+    Pin(int id, int idTab, string tit, string url, int g) {
+        idPin = id;
+        idTablero = idTab;
+        titulo = tit;
+        urlImagen = url;
+        guardados = g;
+    }
+
+    int getIdPin() const { return idPin; }
+    int getIdTablero() const { return idTablero; }
+    string getTitulo() const { return titulo; }
+    string getUrlImagen() const { return urlImagen; }
+    int getGuardados() const { return guardados; }
+
+    void setIdPin(int id) { idPin = id; }
+    void setIdTablero(int idTab) { idTablero = idTab; }
+    void setTitulo(string tit) { titulo = tit; }
+    void setUrlImagen(string url) { urlImagen = url; }
+    void setGuardados(int g) { guardados = g; }
+
+    void mostrarInfo() const {
+        cout << "[Pin #" << idPin << "] "
+             << titulo << " | Guardados: " << guardados
+             << " | URL: " << urlImagen << "\n";
+    }
+};
+
+
+// ==========================================
+// 4. ENTIDAD: Categoria
 // ==========================================
 class Categoria {
 private:
@@ -16,7 +142,6 @@ private:
     string descripcion;
 
 public:
-    // Constructores
     Categoria() {
         idCategoria = 0;
         nombre = "";
@@ -29,262 +154,20 @@ public:
         descripcion = desc;
     }
 
-    // Getters
-    int getIdCategoria() const {
-        return idCategoria;
-    }
+    int getIdCategoria() const { return idCategoria; }
+    string getNombre() const { return nombre; }
+    string getDescripcion() const { return descripcion; }
 
-    string getNombre() const {
-        return nombre;
-    }
+    void setIdCategoria(int id) { idCategoria = id; }
+    void setNombre(string nom) { nombre = nom; }
+    void setDescripcion(string desc) { descripcion = desc; }
 
-    string getDescripcion() const {
-        return descripcion;
-    }
-
-    // Setters
-    void setIdCategoria(int id) {
-        idCategoria = id;
-    }
-
-    void setNombre(string nom) {
-        nombre = nom;
-    }
-
-    void setDescripcion(string desc) {
-        descripcion = desc;
-    }
-
-    // Mostrar informacion
     void mostrarInfo() const {
-        cout << "[Cat. #" << idCategoria << "] " << nombre << " - " << descripcion << "\n";
+        cout << "[Categoria #" << idCategoria << "] "
+             << nombre << " - " << descripcion << "\n";
     }
 };
 
-// ==========================================
-// 2. ENTIDAD: Pin
-// ==========================================
-class Pin {
-private:
-    int idPin;
-    string titulo;
-    string urlImagen;
-    string descripcion;
-    int popularidad;
-    int idCategoria;
-
-public:
-    // Constructores
-    Pin() {
-        idPin = 0;
-        titulo = "";
-        urlImagen = "";
-        descripcion = "";
-        popularidad = 0;
-        idCategoria = 0;
-    }
-
-    Pin(int id, string tit, string url, string desc, int pop, int idCat) {
-        idPin = id;
-        titulo = tit;
-        urlImagen = url;
-        descripcion = desc;
-        popularidad = pop;
-        idCategoria = idCat;
-    }
-
-    // Getters
-    int getIdPin() const {
-        return idPin;
-    }
-
-    string getTitulo() const {
-        return titulo;
-    }
-
-    string getUrlImagen() const {
-        return urlImagen;
-    }
-
-    string getDescripcion() const {
-        return descripcion;
-    }
-
-    int getPopularidad() const {
-        return popularidad;
-    }
-
-    int getIdCategoria() const {
-        return idCategoria;
-    }
-
-    // Setters
-    void setIdPin(int id) {
-        idPin = id;
-    }
-
-    void setTitulo(string tit) {
-        titulo = tit;
-    }
-
-    void setUrlImagen(string url) {
-        urlImagen = url;
-    }
-
-    void setDescripcion(string desc) {
-        descripcion = desc;
-    }
-
-    void setPopularidad(int pop) {
-        popularidad = pop;
-    }
-
-    void setIdCategoria(int idCat) {
-        idCategoria = idCat;
-    }
-
-    // Mostrar informacion
-    void mostrarInfo() const {
-        cout << "  - Pin #" << idPin << ": " << titulo
-            << " | Popularidad: " << popularidad
-            << " | Cat: " << idCategoria << "\n";
-    }
-};
-
-// ==========================================
-// 3. ENTIDAD: Tablero
-// ==========================================
-class Tablero {
-private:
-    int idTablero;
-    string nombre;
-    bool esPrivado;
-    int idUsuarioPropietario;
-
-public:
-    // Constructores
-    Tablero() {
-        idTablero = 0;
-        nombre = "";
-        esPrivado = false;
-        idUsuarioPropietario = 0;
-    }
-
-    Tablero(int id, string nom, bool privado, int idUsuario) {
-        idTablero = id;
-        nombre = nom;
-        esPrivado = privado;
-        idUsuarioPropietario = idUsuario;
-    }
-
-    // Getters
-    int getIdTablero() const {
-        return idTablero;
-    }
-
-    string getNombre() const {
-        return nombre;
-    }
-
-    bool getEsPrivado() const {
-        return esPrivado;
-    }
-
-    int getIdUsuarioPropietario() const {
-        return idUsuarioPropietario;
-    }
-
-    // Setters
-    void setIdTablero(int id) {
-        idTablero = id;
-    }
-
-    void setNombre(string nom) {
-        nombre = nom;
-    }
-
-    void setEsPrivado(bool privado) {
-        esPrivado = privado;
-    }
-
-    void setIdUsuarioPropietario(int idUsuario) {
-        idUsuarioPropietario = idUsuario;
-    }
-
-    // Mostrar informacion
-    void mostrarInfo() const {
-        cout << "[Tablero #" << idTablero << "] " << nombre
-            << " (Propietario ID: " << idUsuarioPropietario << ")"
-            << (esPrivado ? " [Privado]" : " [Publico]") << "\n";
-    }
-};
-
-// ==========================================
-// 4. ENTIDAD: Usuario
-// ==========================================
-class Usuario {
-private:
-    int idUsuario;
-    string username;
-    string email;
-    string biografia;
-
-public:
-    // Constructores
-    Usuario() {
-        idUsuario = 0;
-        username = "";
-        email = "";
-        biografia = "";
-    }
-
-    Usuario(int id, string user, string mail, string bio) {
-        idUsuario = id;
-        username = user;
-        email = mail;
-        biografia = bio;
-    }
-
-    // Getters
-    int getIdUsuario() const {
-        return idUsuario;
-    }
-
-    string getUsername() const {
-        return username;
-    }
-
-    string getEmail() const {
-        return email;
-    }
-
-    string getBiografia() const {
-        return biografia;
-    }
-
-    // Setters
-    void setIdUsuario(int id) {
-        idUsuario = id;
-    }
-
-    void setUsername(string user) {
-        username = user;
-    }
-
-    void setEmail(string mail) {
-        email = mail;
-    }
-
-    void setBiografia(string bio) {
-        biografia = bio;
-    }
-
-    // Mostrar informacion
-    void mostrarInfo() const {
-        cout << "Usuario #" << idUsuario << " (@" << username << ") - " << email << "\n"
-            << "Bio: " << biografia << "\n";
-    }
-};
 
 // ==========================================
 // 5. ENTIDAD: Recomendacion
@@ -292,65 +175,215 @@ public:
 class Recomendacion {
 private:
     int idRecomendacion;
-    int idUsuarioDestino;
-    Pin pinRecomendado;
-    string razon;
+    int idUsuario;
+    int idPin;
+    float puntuacion;
 
 public:
-    // Constructores
     Recomendacion() {
         idRecomendacion = 0;
-        idUsuarioDestino = 0;
-        razon = "";
+        idUsuario = 0;
+        idPin = 0;
+        puntuacion = 0.0f;
     }
 
-    Recomendacion(int id, int idUsuario, Pin pin, string r) {
+    Recomendacion(int id, int idUser, int idP, float punt) {
         idRecomendacion = id;
-        idUsuarioDestino = idUsuario;
-        pinRecomendado = pin;
-        razon = r;
+        idUsuario = idUser;
+        idPin = idP;
+        puntuacion = punt;
     }
 
-    // Getters
-    int getIdRecomendacion() const {
-        return idRecomendacion;
-    }
+    int getIdRecomendacion() const { return idRecomendacion; }
+    int getIdUsuario() const { return idUsuario; }
+    int getIdPin() const { return idPin; }
+    float getPuntuacion() const { return puntuacion; }
 
-    int getIdUsuarioDestino() const {
-        return idUsuarioDestino;
-    }
+    void setIdRecomendacion(int id) { idRecomendacion = id; }
+    void setIdUsuario(int idUser) { idUsuario = idUser; }
+    void setIdPin(int idP) { idPin = idP; }
+    void setPuntuacion(float punt) { puntuacion = punt; }
 
-    Pin getPinRecomendado() const {
-        return pinRecomendado;
-    }
-
-    string getRazon() const {
-        return razon;
-    }
-
-    // Setters
-    void setIdRecomendacion(int id) {
-        idRecomendacion = id;
-    }
-
-    void setIdUsuarioDestino(int idUsuario) {
-        idUsuarioDestino = idUsuario;
-    }
-
-    void setPinRecomendado(Pin pin) {
-        pinRecomendado = pin;
-    }
-
-    void setRazon(string r) {
-        razon = r;
-    }
-
-    // Mostrar informacion
     void mostrarInfo() const {
-        cout << "Recomendacion #" << idRecomendacion << " para Usuario #" << idUsuarioDestino << "\n";
-        cout << "Razon: " << razon << "\n";
-        pinRecomendado.mostrarInfo();
+        cout << "[Recomendacion #" << idRecomendacion << "] "
+             << "Usuario: " << idUsuario
+             << " | Pin: " << idPin
+             << " | Score: " << puntuacion << "\n";
     }
 };
 
-#endif // ENTIDADES_H
+
+// ==========================================
+// 6. ENTIDAD: HistorialBusqueda
+// ==========================================
+class HistorialBusqueda {
+private:
+    int idHistorial;
+    int idUsuario;
+    string terminoBuscado;
+    string fecha;
+
+public:
+    HistorialBusqueda() {
+        idHistorial = 0;
+        idUsuario = 0;
+        terminoBuscado = "";
+        fecha = "";
+    }
+
+    HistorialBusqueda(int id, int idUser, string termino, string fec) {
+        idHistorial = id;
+        idUsuario = idUser;
+        terminoBuscado = termino;
+        fecha = fec;
+    }
+
+    int getIdHistorial() const { return idHistorial; }
+    int getIdUsuario() const { return idUsuario; }
+    string getTerminoBuscado() const { return terminoBuscado; }
+    string getFecha() const { return fecha; }
+
+    void setIdHistorial(int id) { idHistorial = id; }
+    void setIdUsuario(int idUser) { idUsuario = idUser; }
+    void setTerminoBuscado(string termino) { terminoBuscado = termino; }
+    void setFecha(string fec) { fecha = fec; }
+
+    void mostrarInfo() const {
+        cout << "[Historial #" << idHistorial << "] "
+             << "Usuario ID: " << idUsuario
+             << " | Busqueda: " << terminoBuscado
+             << " | Fecha: " << fecha << "\n";
+    }
+};
+
+
+// ==========================================
+// 7. ENTIDAD: PreferenciaUsuario
+// ==========================================
+class PreferenciaUsuario {
+private:
+    int idPreferencia;
+    int idUsuario;
+    int idCategoria;
+    int nivelInteres;
+
+public:
+    PreferenciaUsuario() {
+        idPreferencia = 0;
+        idUsuario = 0;
+        idCategoria = 0;
+        nivelInteres = 0;
+    }
+
+    PreferenciaUsuario(int id, int idUser, int idCat, int nivel) {
+        idPreferencia = id;
+        idUsuario = idUser;
+        idCategoria = idCat;
+        nivelInteres = nivel;
+    }
+
+    int getIdPreferencia() const { return idPreferencia; }
+    int getIdUsuario() const { return idUsuario; }
+    int getIdCategoria() const { return idCategoria; }
+    int getNivelInteres() const { return nivelInteres; }
+
+    void setIdPreferencia(int id) { idPreferencia = id; }
+    void setIdUsuario(int idUser) { idUsuario = idUser; }
+    void setIdCategoria(int idCat) { idCategoria = idCat; }
+    void setNivelInteres(int nivel) { nivelInteres = nivel; }
+
+    void mostrarInfo() const {
+        cout << "[Preferencia #" << idPreferencia << "] "
+             << "Usuario ID: " << idUsuario
+             << " | Categoria ID: " << idCategoria
+             << " | Nivel de interes: " << nivelInteres << "/10\n";
+    }
+};
+
+
+// ==========================================
+// 8. ENTIDAD: TendenciaDiaria
+// ==========================================
+class TendenciaDiaria {
+private:
+    int idTendencia;
+    int idCategoria;
+    int totalInteracciones;
+    string fecha;
+
+public:
+    TendenciaDiaria() {
+        idTendencia = 0;
+        idCategoria = 0;
+        totalInteracciones = 0;
+        fecha = "";
+    }
+
+    TendenciaDiaria(int id, int idCat, int total, string fec) {
+        idTendencia = id;
+        idCategoria = idCat;
+        totalInteracciones = total;
+        fecha = fec;
+    }
+
+    int getIdTendencia() const { return idTendencia; }
+    int getIdCategoria() const { return idCategoria; }
+    int getTotalInteracciones() const { return totalInteracciones; }
+    string getFecha() const { return fecha; }
+
+    void setIdTendencia(int id) { idTendencia = id; }
+    void setIdCategoria(int idCat) { idCategoria = idCat; }
+    void setTotalInteracciones(int total) { totalInteracciones = total; }
+    void setFecha(string fec) { fecha = fec; }
+
+    void mostrarInfo() const {
+        cout << "[Tendencia #" << idTendencia << "] "
+             << "Categoria ID: " << idCategoria
+             << " | Interacciones: " << totalInteracciones
+             << " | Fecha: " << fecha << "\n";
+    }
+};
+
+
+// ==========================================
+// 9. ENTIDAD: SimilitudPin
+// ==========================================
+class SimilitudPin {
+private:
+    int idSimilitud;
+    int idPinA;
+    int idPinB;
+    float porcentajeSimilitud;
+
+public:
+    SimilitudPin() {
+        idSimilitud = 0;
+        idPinA = 0;
+        idPinB = 0;
+        porcentajeSimilitud = 0.0f;
+    }
+
+    SimilitudPin(int id, int pinA, int pinB, float porcentaje) {
+        idSimilitud = id;
+        idPinA = pinA;
+        idPinB = pinB;
+        porcentajeSimilitud = porcentaje;
+    }
+
+    int getIdSimilitud() const { return idSimilitud; }
+    int getIdPinA() const { return idPinA; }
+    int getIdPinB() const { return idPinB; }
+    float getPorcentajeSimilitud() const { return porcentajeSimilitud; }
+
+    void setIdSimilitud(int id) { idSimilitud = id; }
+    void setIdPinA(int pinA) { idPinA = pinA; }
+    void setIdPinB(int pinB) { idPinB = pinB; }
+    void setPorcentajeSimilitud(float porcentaje) { porcentajeSimilitud = porcentaje; }
+
+    void mostrarInfo() const {
+        cout << "[Similitud #" << idSimilitud << "] "
+             << "Pin A: " << idPinA
+             << " | Pin B: " << idPinB
+             << " | Similitud: " << porcentajeSimilitud << "%\n";
+    }
+};
