@@ -7,7 +7,7 @@
 #include "ListaSimple.h"
 #include "GestorArchivos.h"
 #include "Utils.h"
-
+#include "Cola.h"
 using namespace std;
 
 // ==========================================
@@ -172,9 +172,30 @@ void menuModuloPinesYCategorias() {
     } while (opcion != 0);
 }
 
+// ==========================================
 // Integrante 3: Recomendaciones y Métricas
+// ==========================================
+
+// Función recursiva para calcular la similitud entre dos Pines según sus atributos (id, popularidad, categoría)
+float calcularSimilitudRecursiva(int difCategoria, int difPopularidad, int paso = 0) {
+    if (paso == 0) {
+        // Criterio de categoría (base del cálculo)
+        float scoreCat = (difCategoria == 0) ? 50.0f : 10.0f;
+        return scoreCat + calcularSimilitudRecursiva(difCategoria, difPopularidad, 1);
+    } 
+    if (paso == 1) {
+        // Criterio de popularidad
+        float scorePop = 50.0f - (difPopularidad * 2.0f);
+        if (scorePop < 0) scorePop = 0;
+        return scorePop; // Caso base de terminación
+    }
+    return 0.0f;
+}
+
 void menuModuloRecomendaciones() {
+    static Cola<Recomendacion> colaRecomendaciones;
     int opcion = -1;
+
     do {
         Utils::limpiarPantalla();
         cout << "========================================\n";
@@ -183,7 +204,7 @@ void menuModuloRecomendaciones() {
         cout << "1. Encolar recomendacion (Cola)\n";
         cout << "2. Procesar siguiente recomendacion\n";
         cout << "3. Calcular similitud entre Pines (Recursividad)\n";
-        cout << "4. Generar reporte / metricas\n";
+        cout << "4. Generar reporte / metricas de recomendaciones\n";
         cout << "0. Volver al menu principal\n";
         cout << "Opcion: ";
 
@@ -193,22 +214,75 @@ void menuModuloRecomendaciones() {
         }
 
         switch (opcion) {
-        case 1:
-            cout << "\n[En desarrollo por Integrante 3]\n";
+        case 1: {
+            Utils::limpiarPantalla();
+            int id, idUsuario, idPin;
+            float puntuacion;
+            cout << "--- ENCOLAR RECOMENDACION ---\n";
+            cout << "ID Recomendacion: "; cin >> id;
+            cout << "ID Usuario: "; cin >> idUsuario;
+            cout << "ID Pin: "; cin >> idPin;
+            cout << "Puntuacion / Score (0.0 a 10.0): "; cin >> puntuacion;
+
+            Recomendacion rec(id, idUsuario, idPin, puntuacion);
+            colaRecomendaciones.encolar(rec);
+
+            // Persistir en CSV
+            string lineaCSV = to_string(id) + "," + to_string(idUsuario) + "," + to_string(idPin) + "," + to_string(puntuacion);
+            GestorArchivos::guardarLinea("data/recomendaciones.csv", lineaCSV);
+
+            cout << "\n[OK] Recomendacion encolada correctamente y guardada en CSV.\n";
             Utils::pausar();
             break;
-        case 2:
-            cout << "\n[En desarrollo por Integrante 3]\n";
+        }
+        case 2: {
+            Utils::limpiarPantalla();
+            cout << "--- PROCESAR SIGUIENTE RECOMENDACION ---\n";
+            if (colaRecomendaciones.esVacia()) {
+                cout << "No hay recomendaciones pendientes en la cola.\n";
+            } else {
+                Recomendacion recAtendida;
+                if (colaRecomendaciones.desencolar(recAtendida)) {
+                    cout << "Procesando recomendacion:\n";
+                    recAtendida.mostrarInfo();
+                    cout << "\n[OK] Recomendacion procesada con exito.\n";
+                }
+            }
             Utils::pausar();
             break;
-        case 3:
-            cout << "\n[En desarrollo por Integrante 3]\n";
+        }
+        case 3: {
+            Utils::limpiarPantalla();
+            int cat1, cat2, pop1, pop2;
+            cout << "--- CALCULADOR DE SIMILITUD (RECURSIVO) ---\n";
+            cout << "ID Categoria Pin A: "; cin >> cat1;
+            cout << "Popularidad Pin A (0-100): "; cin >> pop1;
+            cout << "ID Categoria Pin B: "; cin >> cat2;
+            cout << "Popularidad Pin B (0-100): "; cin >> pop2;
+
+            int difCat = abs(cat1 - cat2);
+            int difPop = abs(pop1 - pop2);
+
+            float similitud = calcularSimilitudRecursiva(difCat, difPop);
+            cout << "\n[Resultado] La similitud calculada de forma recursiva es: " << similitud << "%\n";
             Utils::pausar();
             break;
-        case 4:
-            cout << "\n[En desarrollo por Integrante 3]\n";
+        }
+        case 4: {
+            Utils::limpiarPantalla();
+            cout << "--- REPORTE / METRICAS DE COLA DE RECOMENDACIONES ---\n";
+            cout << "Cantidad de recomendaciones en espera: " << colaRecomendaciones.getCantidad() << "\n\n";
+            if (colaRecomendaciones.esVacia()) {
+                cout << "La cola se encuentra vacia.\n";
+            } else {
+                cout << "Listado de elementos en cola:\n";
+                colaRecomendaciones.recorrer([](Recomendacion rec) {
+                    rec.mostrarInfo();
+                });
+            }
             Utils::pausar();
             break;
+        }
         case 0:
             break;
         default:
