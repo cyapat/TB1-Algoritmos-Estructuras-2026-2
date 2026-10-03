@@ -1,13 +1,16 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
-// Cabeceras base de infraestructura del grupo
+// Cabeceras base e infraestructura del proyecto
 #include "Entidades.h"
 #include "Nodo.h"
 #include "ListaSimple.h"
+#include "ListaDoble.h"
+#include "Cola.h"
 #include "GestorArchivos.h"
 #include "Utils.h"
-#include "Cola.h"
+
 using namespace std;
 
 // ==========================================
@@ -62,7 +65,8 @@ void menuModuloUsuariosYTableros() {
             string lineaCSV = to_string(id) + "," + nombre + ",," + email + ",";
             if (GestorArchivos::guardarLinea("data/usuarios.csv", lineaCSV)) {
                 cout << "\n[OK] Usuario guardado con exito en CSV.\n";
-            } else {
+            }
+            else {
                 cout << "\n[Error] No se pudo guardar el usuario.\n";
             }
             Utils::pausar();
@@ -93,10 +97,11 @@ void menuModuloUsuariosYTableros() {
             cout << "--- LISTA DE TABLEROS EN MEMORIA (" << listaTableros.getCantidad() << ") ---\n";
             if (listaTableros.esVacia()) {
                 cout << "No hay tableros registrados en la lista.\n";
-            } else {
+            }
+            else {
                 listaTableros.recorrer([](Tablero tablero) {
                     tablero.mostrarInfo();
-                });
+                    });
             }
             Utils::pausar();
             break;
@@ -127,6 +132,40 @@ void menuModuloUsuariosYTableros() {
 
 // Integrante 2: Pines y Categorías
 void menuModuloPinesYCategorias() {
+    ListaDoble<Categoria> listaCategorias;
+    vector<Pin> listaPines;
+
+    // Cargar categorias desde categorias.csv
+    vector<string> lineasCategorias = GestorArchivos::leerLineas("data/categorias.csv");
+    for (const string& linea : lineasCategorias) {
+        vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
+        if (datos.size() >= 4 && datos[0] != "idCategoria") {
+            int idCategoria = stoi(datos[0]);
+            string nombre = datos[1];
+            string descripcion = datos[2];
+            int cantidadPines = stoi(datos[3]);
+
+            listaCategorias.insertarFinal(Categoria(idCategoria, nombre, descripcion, cantidadPines));
+        }
+    }
+
+    // Cargar pines desde pines.csv
+    vector<string> lineasPines = GestorArchivos::leerLineas("data/pines.csv");
+    for (const string& linea : lineasPines) {
+        vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
+        if (datos.size() >= 7 && datos[0] != "idPin") {
+            int idPin = stoi(datos[0]);
+            string titulo = datos[1];
+            string descripcion = datos[2];
+            int idTablero = stoi(datos[3]);
+            int idCategoria = stoi(datos[4]);
+            int popularidad = stoi(datos[5]);
+            string fechaCreacion = datos[6];
+
+            listaPines.push_back(Pin(idPin, titulo, descripcion, idTablero, idCategoria, popularidad, fechaCreacion));
+        }
+    }
+
     int opcion = -1;
     do {
         Utils::limpiarPantalla();
@@ -146,22 +185,170 @@ void menuModuloPinesYCategorias() {
         }
 
         switch (opcion) {
-        case 1:
-            cout << "\n[En desarrollo por Integrante 2]\n";
+        case 1: {
+            Utils::limpiarPantalla();
+            int idCategoria;
+            string nombre, descripcion;
+
+            cout << "--- AGREGAR CATEGORIA ---\n";
+            cout << "ID Categoria: ";
+            while (!(cin >> idCategoria)) {
+                cout << "[Error] Debes ingresar un numero.\n";
+                Utils::limpiarEntrada();
+                cout << "ID Categoria: ";
+            }
+            Utils::limpiarEntrada();
+
+            bool categoriaExiste = false;
+            listaCategorias.recorrer([&](Categoria categoria) {
+                if (categoria.getIdCategoria() == idCategoria) {
+                    categoriaExiste = true;
+                }
+            });
+
+            if (categoriaExiste) {
+                cout << "\n[Error] Ya existe una categoria con ese ID.\n";
+                Utils::pausar();
+                break;
+            }
+
+            cout << "Nombre: "; getline(cin, nombre);
+            cout << "Descripcion: "; getline(cin, descripcion);
+
+            Categoria nuevaCategoria(idCategoria, nombre, descripcion, 0);
+            string lineaCSV = to_string(idCategoria) + "," + nombre + "," + descripcion + ",0";
+
+            if (GestorArchivos::guardarLinea("data/categorias.csv", lineaCSV)) {
+                listaCategorias.insertarFinal(nuevaCategoria);
+                cout << "\n[OK] Categoria insertada en ListaDoble y guardada en CSV.\n";
+            } else {
+                cout << "\n[Error] No se pudo guardar la categoria.\n";
+            }
             Utils::pausar();
             break;
-        case 2:
-            cout << "\n[En desarrollo por Integrante 2]\n";
+        }
+        case 2: {
+            Utils::limpiarPantalla();
+            int idPin, idTablero, idCategoria, popularidad;
+            string titulo, descripcion, fechaCreacion;
+
+            cout << "--- AGREGAR PIN ---\n";
+            cout << "ID Pin: ";
+            while (!(cin >> idPin)) {
+                cout << "[Error] Debes ingresar un numero.\n";
+                Utils::limpiarEntrada();
+                cout << "ID Pin: ";
+            }
+
+            bool pinExiste = false;
+            for (const Pin& pin : listaPines) {
+                if (pin.getIdPin() == idPin) {
+                    pinExiste = true;
+                    break;
+                }
+            }
+
+            if (pinExiste) {
+                Utils::limpiarEntrada();
+                cout << "\n[Error] Ya existe un Pin con ese ID.\n";
+                Utils::pausar();
+                break;
+            }
+
+            cout << "ID Categoria (numero): ";
+            while (!(cin >> idCategoria)) {
+                cout << "[Error] Debes ingresar el ID numerico de la categoria.\n";
+                Utils::limpiarEntrada();
+                cout << "ID Categoria (numero): ";
+            }
+
+            bool categoriaExiste = false;
+            listaCategorias.recorrer([&](Categoria categoria) {
+                if (categoria.getIdCategoria() == idCategoria) {
+                    categoriaExiste = true;
+                }
+            });
+
+            if (!categoriaExiste) {
+                Utils::limpiarEntrada();
+                cout << "\n[Error] La categoria indicada no existe.\n";
+                Utils::pausar();
+                break;
+            }
+
+            cout << "ID Tablero: ";
+            while (!(cin >> idTablero)) {
+                cout << "[Error] Debes ingresar un numero.\n";
+                Utils::limpiarEntrada();
+                cout << "ID Tablero: ";
+            }
+
+            cout << "Popularidad inicial: ";
+            while (!(cin >> popularidad)) {
+                cout << "[Error] Debes ingresar un numero.\n";
+                Utils::limpiarEntrada();
+                cout << "Popularidad inicial: ";
+            }
+
+            Utils::limpiarEntrada();
+            cout << "Titulo: "; getline(cin, titulo);
+            cout << "Descripcion: "; getline(cin, descripcion);
+            cout << "Fecha de creacion (AAAA-MM-DD): "; getline(cin, fechaCreacion);
+
+            Pin nuevoPin(idPin, titulo, descripcion, idTablero, idCategoria, popularidad, fechaCreacion);
+            string lineaCSV = to_string(idPin) + "," + titulo + "," + descripcion + "," +
+                to_string(idTablero) + "," + to_string(idCategoria) + "," +
+                to_string(popularidad) + "," + fechaCreacion;
+
+            if (GestorArchivos::guardarLinea("data/pines.csv", lineaCSV)) {
+                listaPines.push_back(nuevoPin);
+                cout << "\n[OK] Pin agregado y guardado en CSV.\n";
+            } else {
+                cout << "\n[Error] No se pudo guardar el Pin.\n";
+            }
             Utils::pausar();
             break;
+        }
         case 3:
             cout << "\n[En desarrollo por Integrante 2]\n";
             Utils::pausar();
             break;
-        case 4:
-            cout << "\n[En desarrollo por Integrante 2]\n";
+        case 4: {
+            Utils::limpiarPantalla();
+            cout << "--- CARGAR DATOS DESDE CSV ---\n\n";
+
+            listaCategorias.limpiar();
+            listaPines.clear();
+
+            vector<string> lineasCategorias = GestorArchivos::leerLineas("data/categorias.csv");
+            for (const string& linea : lineasCategorias) {
+                vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
+                if (datos.size() >= 4 && datos[0] != "idCategoria") {
+                    listaCategorias.insertarFinal(Categoria(stoi(datos[0]), datos[1], datos[2], stoi(datos[3])));
+                }
+            }
+
+            vector<string> lineasPines = GestorArchivos::leerLineas("data/pines.csv");
+            for (const string& linea : lineasPines) {
+                vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
+                if (datos.size() >= 7 && datos[0] != "idPin") {
+                    listaPines.push_back(Pin(stoi(datos[0]), datos[1], datos[2], stoi(datos[3]), stoi(datos[4]), stoi(datos[5]), datos[6]));
+                }
+            }
+
+            cout << "[OK] Datos cargados correctamente.\n\n";
+            cout << "Categorias cargadas: " << listaCategorias.getCantidad() << "\n";
+            cout << "Pines cargados: " << listaPines.size() << "\n";
+
+            cout << "\n--- CATEGORIAS ---\n";
+            listaCategorias.recorrer([](Categoria categoria) { categoria.mostrarInfo(); });
+
+            cout << "\n--- PINES ---\n";
+            for (const Pin& pin : listaPines) { pin.mostrarInfo(); }
+
             Utils::pausar();
             break;
+        }
         case 0:
             break;
         default:
@@ -172,22 +359,16 @@ void menuModuloPinesYCategorias() {
     } while (opcion != 0);
 }
 
-// ==========================================
 // Integrante 3: Recomendaciones y Métricas
-// ==========================================
-
-// Función recursiva para calcular la similitud entre dos Pines según sus atributos (id, popularidad, categoría)
 float calcularSimilitudRecursiva(int difCategoria, int difPopularidad, int paso = 0) {
     if (paso == 0) {
-        // Criterio de categoría (base del cálculo)
         float scoreCat = (difCategoria == 0) ? 50.0f : 10.0f;
         return scoreCat + calcularSimilitudRecursiva(difCategoria, difPopularidad, 1);
     } 
     if (paso == 1) {
-        // Criterio de popularidad
         float scorePop = 50.0f - (difPopularidad * 2.0f);
         if (scorePop < 0) scorePop = 0;
-        return scorePop; // Caso base de terminación
+        return scorePop;
     }
     return 0.0f;
 }
@@ -227,7 +408,6 @@ void menuModuloRecomendaciones() {
             Recomendacion rec(id, idUsuario, idPin, puntuacion);
             colaRecomendaciones.encolar(rec);
 
-            // Persistir en CSV
             string lineaCSV = to_string(id) + "," + to_string(idUsuario) + "," + to_string(idPin) + "," + to_string(puntuacion);
             GestorArchivos::guardarLinea("data/recomendaciones.csv", lineaCSV);
 
@@ -276,9 +456,7 @@ void menuModuloRecomendaciones() {
                 cout << "La cola se encuentra vacia.\n";
             } else {
                 cout << "Listado de elementos en cola:\n";
-                colaRecomendaciones.recorrer([](Recomendacion rec) {
-                    rec.mostrarInfo();
-                });
+                colaRecomendaciones.recorrer([](Recomendacion rec) { rec.mostrarInfo(); });
             }
             Utils::pausar();
             break;
