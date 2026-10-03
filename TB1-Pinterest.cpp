@@ -202,6 +202,53 @@ void menuModuloUsuariosYTableros() {
 }
 
 // Integrante 2: Pines y Categorías
+void mezclarPines(vector<Pin>& pines, int izquierda, int medio, int derecha) {
+    int n1 = medio - izquierda + 1;
+    int n2 = derecha - medio;
+
+    vector<Pin> izq(n1);
+    vector<Pin> der(n2);
+
+    for (int i = 0; i < n1; i++) izq[i] = pines[izquierda + i];
+    for (int j = 0; j < n2; j++) der[j] = pines[medio + 1 + j];
+
+    int i = 0, j = 0, k = izquierda;
+
+    // Ordenamiento descendente por Popularidad (de mayor a menor)
+    while (i < n1 && j < n2) {
+        if (izq[i].getPopularidad() >= der[j].getPopularidad()) {
+            pines[k] = izq[i];
+            i++;
+        } else {
+            pines[k] = der[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        pines[k] = izq[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        pines[k] = der[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSortPines(vector<Pin>& pines, int izquierda, int derecha) {
+    if (izquierda < derecha) {
+        int medio = izquierda + (derecha - izquierda) / 2;
+
+        mergeSortPines(pines, izquierda, medio);
+        mergeSortPines(pines, medio + 1, derecha);
+
+        mezclarPines(pines, izquierda, medio, derecha);
+    }
+}
 void menuModuloPinesYCategorias() {
     ListaDoble<Categoria> listaCategorias;
     vector<Pin> listaPines;
@@ -367,10 +414,24 @@ void menuModuloPinesYCategorias() {
             Utils::pausar();
             break;
         }
-        case 3:
-            cout << "\n[Pendiente: Implementacion de MergeSort por Integrante 2]\n";
+    case 3: {
+            Utils::limpiarPantalla();
+            cout << "--- ORDENAR PINES POR POPULARIDAD (MERGESORT - PERSONA 2) ---\n\n";
+            
+            if (listaPines.empty()) {
+                cout << "No hay pines registrados para ordenar.\n";
+            } else {
+                // Aplicar el algoritmo MergeSort sobre el vector de pines
+                mergeSortPines(listaPines, 0, listaPines.size() - 1);
+
+                cout << "[OK] Pines ordenados exitosamente de MAYOR a MENOR popularidad:\n\n";
+                for (const auto& pin : listaPines) {
+                    pin.mostrarInfo();
+                }
+            }
             Utils::pausar();
             break;
+        }
         case 4: {
             Utils::limpiarPantalla();
             cout << "--- CARGAR DATOS DESDE CSV ---\n\n";
