@@ -142,7 +142,6 @@ public:
     }
 };
 
-
 // ==========================================
 // 4. ENTIDAD: Categoria
 // ==========================================
@@ -151,34 +150,39 @@ private:
     int idCategoria;
     string nombre;
     string descripcion;
+    int cantidadPines;
 
 public:
     Categoria() {
         idCategoria = 0;
         nombre = "";
         descripcion = "";
+        cantidadPines = 0;
     }
 
-    Categoria(int id, string nom, string desc) {
+    Categoria(int id, string nom, string desc, int cantidad) {
         idCategoria = id;
         nombre = nom;
         descripcion = desc;
+        cantidadPines = cantidad;
     }
 
     int getIdCategoria() const { return idCategoria; }
     string getNombre() const { return nombre; }
     string getDescripcion() const { return descripcion; }
+    int getCantidadPines() const { return cantidadPines; }
 
     void setIdCategoria(int id) { idCategoria = id; }
     void setNombre(string nom) { nombre = nom; }
     void setDescripcion(string desc) { descripcion = desc; }
+    void setCantidadPines(int cantidad) { cantidadPines = cantidad; }
 
     void mostrarInfo() const {
         cout << "[Categoria #" << idCategoria << "] "
-             << nombre << " - " << descripcion << "\n";
+            << nombre << " - " << descripcion
+            << " | Pines: " << cantidadPines << "\n";
     }
 };
-
 
 // ==========================================
 // 5. ENTIDAD: Recomendacion
@@ -396,5 +400,142 @@ public:
              << "Pin A: " << idPinA
              << " | Pin B: " << idPinB
              << " | Similitud: " << porcentajeSimilitud << "%\n";
+    }
+};
+
+// ==========================================
+// 10. ENTIDAD: Etiqueta
+// ==========================================
+class Etiqueta {
+private:
+    int idEtiqueta;
+    string nombre;
+    int idPin;
+
+public:
+    Etiqueta() {
+        idEtiqueta = 0;
+        nombre = "";
+        idPin = 0;
+    }
+
+    Etiqueta(int id, string nom, int idP) {
+        idEtiqueta = id;
+        nombre = nom;
+        idPin = idP;
+    }
+
+    int getIdEtiqueta() const { return idEtiqueta; }
+    string getNombre() const { return nombre; }
+    int getIdPin() const { return idPin; }
+
+    void setIdEtiqueta(int id) { idEtiqueta = id; }
+    void setNombre(string nom) { nombre = nom; }
+    void setIdPin(int idP) { idPin = idP; }
+
+    void mostrarInfo() const {
+        cout << "[Etiqueta #" << idEtiqueta << "] "
+             << nombre
+             << " | Pin ID: " << idPin << "\n";
+    }
+};
+
+
+// ==========================================
+// 11. ENTIDAD: Comentario
+// ==========================================
+class Comentario {
+private:
+    int idComentario;
+    int idPin;
+    int idUsuario;
+    string texto;
+    string fecha;
+
+public:
+    Comentario() {
+        idComentario = 0;
+        idPin = 0;
+        idUsuario = 0;
+        texto = "";
+        fecha = "";
+    }
+
+    Comentario(int id, int idP, int idUser, string txt, string fec) {
+        idComentario = id;
+        idPin = idP;
+        idUsuario = idUser;
+        texto = txt;
+        fecha = fec;
+    }
+
+    int getIdComentario() const { return idComentario; }
+    int getIdPin() const { return idPin; }
+    int getIdUsuario() const { return idUsuario; }
+    string getTexto() const { return texto; }
+    string getFecha() const { return fecha; }
+
+    void setIdComentario(int id) { idComentario = id; }
+    void setIdPin(int idP) { idPin = idP; }
+    void setIdUsuario(int idUser) { idUsuario = idUser; }
+    void setTexto(string txt) { texto = txt; }
+    void setFecha(string fec) { fecha = fec; }
+
+    void mostrarInfo() const {
+        cout << "[Comentario #" << idComentario << "] "
+             << "Pin ID: " << idPin
+             << " | Usuario ID: " << idUsuario
+             << " | Texto: " << texto
+             << " | Fecha: " << fecha << "\n";
+    }
+};
+
+
+// ==========================================
+// 12. ENTIDAD: Interaccion
+// ==========================================
+class Interaccion {
+private:
+    int idInteraccion;
+    int idPin;
+    int idUsuario;
+    string tipo;
+    string fecha;
+
+public:
+    Interaccion() {
+        idInteraccion = 0;
+        idPin = 0;
+        idUsuario = 0;
+        tipo = "";
+        fecha = "";
+    }
+
+    Interaccion(int id, int idP, int idUser, string tip, string fec) {
+        idInteraccion = id;
+        idPin = idP;
+        idUsuario = idUser;
+        tipo = tip;
+        fecha = fec;
+    }
+
+    int getIdInteraccion() const { return idInteraccion; }
+    int getIdPin() const { return idPin; }
+    int getIdUsuario() const { return idUsuario; }
+    string getTipo() const { return tipo; }
+    string getFecha() const { return fecha; }
+
+    void setIdInteraccion(int id) { idInteraccion = id; }
+    void setIdPin(int idP) { idPin = idP; }
+    void setIdUsuario(int idUser) { idUsuario = idUser; }
+    void setTipo(string tip) { tipo = tip; }
+    void setFecha(string fec) { fecha = fec; }
+
+    void mostrarInfo() const {
+        cout << "[Interaccion #" << idInteraccion << "] "
+             << "Pin ID: " << idPin
+             << " | Usuario ID: " << idUsuario
+             << " | Tipo: " << tipo
+             << " | Fecha: " << fecha << "\n";
     }
 };
