@@ -19,10 +19,36 @@ using namespace std;
 // ==========================================
 
 // Integrante 1: Usuarios y Tableros
+// ==========================================
+// Integrante 1: Usuarios y Tableros (Persona 1)
+// ==========================================
+
+// Algoritmo de Ordenamiento Avanzado: QuickSort para ordenar Tableros por ID
+void quickSortTableros(vector<Tablero>& tableros, int izquierda, int derecha) {
+    int i = izquierda;
+    int j = derecha;
+    int pivote = tableros[(izquierda + derecha) / 2].getIdTablero();
+
+    while (i <= j) {
+        while (tableros[i].getIdTablero() < pivote) i++;
+        while (tableros[j].getIdTablero() > pivote) j--;
+
+        if (i <= j) {
+            swap(tableros[i], tableros[j]);
+            i++;
+            j--;
+        }
+    }
+
+    if (izquierda < j) quickSortTableros(tableros, izquierda, j);
+    if (i < derecha) quickSortTableros(tableros, i, derecha);
+}
+
 void menuModuloUsuariosYTableros() {
     ListaSimple<Tablero> listaTableros;
     int opcion = -1;
 
+    // Cargar datos desde el archivo CSV
     vector<string> lineasTableros = GestorArchivos::leerLineas("data/tableros.csv");
     for (const string& linea : lineasTableros) {
         vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
@@ -38,12 +64,14 @@ void menuModuloUsuariosYTableros() {
     do {
         Utils::limpiarPantalla();
         cout << "========================================\n";
-        cout << "   MODULO 1: USUARIOS Y TABLEROS\n";
+        cout << "   MODULO 1: USUARIOS Y TABLEROS (Persona 1)\n";
         cout << "========================================\n";
         cout << "1. Registrar usuario\n";
         cout << "2. Crear nuevo tablero (Lista Simple)\n";
         cout << "3. Listar todos los tableros\n";
-        cout << "4. Ver usuarios registrados (CSV)\n";
+        cout << "4. Ordenar Tableros por ID (QuickSort - Persona 1)\n";
+        cout << "5. Ver metricas de tableros (Lambdas Persona 1)\n";
+        cout << "6. Ver usuarios registrados (CSV)\n";
         cout << "0. Volver al menu principal\n";
         cout << "Opcion: ";
 
@@ -98,6 +126,7 @@ void menuModuloUsuariosYTableros() {
             if (listaTableros.esVacia()) {
                 cout << "No hay tableros registrados en la lista.\n";
             } else {
+                // LAMBDA 1: Recorrer e imprimir tableros
                 listaTableros.recorrer([](Tablero tablero) {
                     tablero.mostrarInfo();
                 });
@@ -105,6 +134,49 @@ void menuModuloUsuariosYTableros() {
             Utils::pausar();
             break;
         case 4: {
+            Utils::limpiarPantalla();
+            cout << "--- ORDENAMIENTO DE TABLEROS POR QUICKSORT ---\n";
+            if (listaTableros.esVacia()) {
+                cout << "No hay tableros para ordenar.\n";
+            } else {
+                // Copiar de la lista simple a vector para aplicar QuickSort
+                vector<Tablero> vecTableros;
+                listaTableros.recorrer([&vecTableros](Tablero t) {
+                    vecTableros.push_back(t);
+                });
+
+                quickSortTableros(vecTableros, 0, vecTableros.size() - 1);
+
+                cout << "[OK] Tableros ordenados por ID mediante QuickSort:\n\n";
+                for (const auto& t : vecTableros) {
+                    t.mostrarInfo();
+                }
+            }
+            Utils::pausar();
+            break;
+        }
+        case 5: {
+            Utils::limpiarPantalla();
+            cout << "--- METRICAS DE TABLEROS (USO DE LAMBDAS - PERSONA 1) ---\n";
+            
+            // LAMBDA 2: Contar tableros que son privados
+            int privados = listaTableros.contarSi([](Tablero t) {
+                return t.getEsPrivado();
+            });
+
+            // LAMBDA 3: Contar tableros que son públicos
+            int publicos = listaTableros.contarSi([](Tablero t) {
+                return !t.getEsPrivado();
+            });
+
+            cout << "Total de tableros registrados: " << listaTableros.getCantidad() << "\n";
+            cout << "Tableros Privados: " << privados << "\n";
+            cout << "Tableros Publicos: " << publicos << "\n";
+            
+            Utils::pausar();
+            break;
+        }
+        case 6: {
             Utils::limpiarPantalla();
             cout << "--- USUARIOS EN USUARIOS.CSV ---\n";
             vector<string> lineasUsuarios = GestorArchivos::leerLineas("data/usuarios.csv");
