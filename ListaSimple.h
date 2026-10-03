@@ -69,6 +69,62 @@ public:
         return nullptr;
     }
 
+    // =================================================================
+    // 3 MÉTODOS NUEVOS EXIGIDOS POR LA RÚBRICA (PERSONA 1)
+    // =================================================================
+
+    // Método Nuevo 1: Contar elementos que cumplen un criterio (Uso con Lambdas)
+    int contarSi(function<bool(T)> criterio) const {
+        int contador = 0;
+        NodoSimple<T>* aux = cabeza;
+        while (aux != nullptr) {
+            if (criterio(aux->getDato())) {
+                contador++;
+            }
+            aux = aux->getSiguiente();
+        }
+        return contador;
+    }
+
+    // Método Nuevo 2: Eliminar un nodo en memoria según un criterio especificado
+    bool eliminarSi(function<bool(T)> criterio) {
+        if (esVacia()) return false;
+
+        NodoSimple<T>* actual = cabeza;
+        NodoSimple<T>* anterior = nullptr;
+
+        while (actual != nullptr) {
+            if (criterio(actual->getDato())) {
+                if (anterior == nullptr) {
+                    cabeza = actual->getSiguiente();
+                } else {
+                    anterior->setSiguiente(actual->getSiguiente());
+                }
+                delete actual;
+                cantidad--;
+                return true;
+            }
+            anterior = actual;
+            actual = actual->getSiguiente();
+        }
+        return false;
+    }
+
+    // Método Nuevo 3: Invertir completamente el orden de los nodos en la lista
+    void invertir() {
+        NodoSimple<T>* anterior = nullptr;
+        NodoSimple<T>* actual = cabeza;
+        NodoSimple<T>* siguiente = nullptr;
+
+        while (actual != nullptr) {
+            siguiente = actual->getSiguiente();
+            actual->setSiguiente(anterior);
+            anterior = actual;
+            actual = siguiente;
+        }
+        cabeza = anterior;
+    }
+
     // Vaciar lista y liberar memoria dinamica
     void limpiar() {
         while (cabeza != nullptr) {
