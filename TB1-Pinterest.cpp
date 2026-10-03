@@ -4,6 +4,7 @@
 // Cabeceras base de infraestructura del grupo
 #include "Entidades.h"
 #include "Nodo.h"
+#include "ListaSimple.h"
 #include "GestorArchivos.h"
 #include "Utils.h"
 
@@ -15,7 +16,21 @@ using namespace std;
 
 // Integrante 1: Usuarios y Tableros
 void menuModuloUsuariosYTableros() {
+    ListaSimple<Tablero> listaTableros;
     int opcion = -1;
+
+    vector<string> lineasTableros = GestorArchivos::leerLineas("data/tableros.csv");
+    for (const string& linea : lineasTableros) {
+        vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
+        if (datos.size() >= 4 && datos[0] != "idTablero") {
+            int idTablero = stoi(datos[0]);
+            int idUsuario = datos.size() > 4 ? stoi(datos[2]) : stoi(datos[1]);
+            string nombre = datos.size() > 4 ? datos[1] : datos[2];
+            bool esPrivado = datos.size() > 4 ? datos[4] != "1" : datos[3] == "1";
+            listaTableros.insertarFinal(Tablero(idTablero, idUsuario, nombre, esPrivado));
+        }
+    }
+
     do {
         Utils::limpiarPantalla();
         cout << "========================================\n";
@@ -23,8 +38,8 @@ void menuModuloUsuariosYTableros() {
         cout << "========================================\n";
         cout << "1. Registrar usuario\n";
         cout << "2. Crear nuevo tablero (Lista Simple)\n";
-        cout << "3. Listar tableros de un usuario\n";
-        cout << "4. Cargar / Guardar datos desde CSV\n";
+        cout << "3. Listar todos los tableros\n";
+        cout << "4. Ver usuarios registrados (CSV)\n";
         cout << "0. Volver al menu principal\n";
         cout << "Opcion: ";
 
@@ -34,22 +49,72 @@ void menuModuloUsuariosYTableros() {
         }
 
         switch (opcion) {
-        case 1:
-            cout << "\n[En desarrollo por Integrante 1]\n";
+        case 1: {
+            Utils::limpiarPantalla();
+            int id;
+            string nombre, email;
+            cout << "--- REGISTRAR USUARIO ---\n";
+            cout << "ID Usuario: "; cin >> id;
+            Utils::limpiarEntrada();
+            cout << "Nombre: "; getline(cin, nombre);
+            cout << "Email: "; getline(cin, email);
+
+            string lineaCSV = to_string(id) + "," + nombre + ",," + email + ",";
+            if (GestorArchivos::guardarLinea("data/usuarios.csv", lineaCSV)) {
+                cout << "\n[OK] Usuario guardado con exito en CSV.\n";
+            } else {
+                cout << "\n[Error] No se pudo guardar el usuario.\n";
+            }
             Utils::pausar();
             break;
-        case 2:
-            cout << "\n[En desarrollo por Integrante 1]\n";
+        }
+        case 2: {
+            Utils::limpiarPantalla();
+            int idTablero, idUsuario, esPrivado;
+            string nombre;
+            cout << "--- CREAR TABLERO ---\n";
+            cout << "ID Tablero: "; cin >> idTablero;
+            cout << "ID Usuario Propietario: "; cin >> idUsuario;
+            Utils::limpiarEntrada();
+            cout << "Nombre del Tablero: "; getline(cin, nombre);
+            cout << "Es privado? (1 = Si, 0 = No): "; cin >> esPrivado;
+
+            listaTableros.insertarFinal(Tablero(idTablero, idUsuario, nombre, esPrivado == 1));
+            string lineaCSV = to_string(idTablero) + "," + nombre + "," + to_string(idUsuario)
+                + ",," + to_string(esPrivado == 0 ? 1 : 0) + ",0,";
+            GestorArchivos::guardarLinea("data/tableros.csv", lineaCSV);
+
+            cout << "\n[OK] Tablero insertado en ListaSimple y guardado en CSV.\n";
             Utils::pausar();
             break;
+        }
         case 3:
-            cout << "\n[En desarrollo por Integrante 1]\n";
+            Utils::limpiarPantalla();
+            cout << "--- LISTA DE TABLEROS EN MEMORIA (" << listaTableros.getCantidad() << ") ---\n";
+            if (listaTableros.esVacia()) {
+                cout << "No hay tableros registrados en la lista.\n";
+            } else {
+                listaTableros.recorrer([](Tablero tablero) {
+                    tablero.mostrarInfo();
+                });
+            }
             Utils::pausar();
             break;
-        case 4:
-            cout << "\n[En desarrollo por Integrante 1]\n";
+        case 4: {
+            Utils::limpiarPantalla();
+            cout << "--- USUARIOS EN USUARIOS.CSV ---\n";
+            vector<string> lineasUsuarios = GestorArchivos::leerLineas("data/usuarios.csv");
+            for (const string& linea : lineasUsuarios) {
+                vector<string> usuario = GestorArchivos::dividirLinea(linea, ',');
+                if (usuario.size() >= 3 && usuario[0] != "idUsuario") {
+                    string email = usuario.size() >= 4 ? usuario[3] : usuario[2];
+                    Usuario usuarioActual(stoi(usuario[0]), usuario[1], email);
+                    usuarioActual.mostrarInfo();
+                }
+            }
             Utils::pausar();
             break;
+        }
         case 0:
             break;
         default:

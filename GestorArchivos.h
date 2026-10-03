@@ -12,6 +12,17 @@ using namespace std;
 
 class GestorArchivos {
 public:
+    static vector<string> dividirLinea(const string& linea, char delimitador) {
+        vector<string> campos;
+        string campo;
+        stringstream flujo(linea);
+
+        while (getline(flujo, campo, delimitador)) {
+            campos.push_back(campo);
+        }
+        return campos;
+    }
+
     // Lee un archivo CSV linea por linea
     static vector<string> leerLineas(const string& rutaArchivo) {
         vector<string> lineas;
