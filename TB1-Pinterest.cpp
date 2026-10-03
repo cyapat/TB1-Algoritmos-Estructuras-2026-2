@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 // Cabeceras base e infraestructura del proyecto
 #include "Entidades.h"
@@ -65,8 +66,7 @@ void menuModuloUsuariosYTableros() {
             string lineaCSV = to_string(id) + "," + nombre + ",," + email + ",";
             if (GestorArchivos::guardarLinea("data/usuarios.csv", lineaCSV)) {
                 cout << "\n[OK] Usuario guardado con exito en CSV.\n";
-            }
-            else {
+            } else {
                 cout << "\n[Error] No se pudo guardar el usuario.\n";
             }
             Utils::pausar();
@@ -97,11 +97,10 @@ void menuModuloUsuariosYTableros() {
             cout << "--- LISTA DE TABLEROS EN MEMORIA (" << listaTableros.getCantidad() << ") ---\n";
             if (listaTableros.esVacia()) {
                 cout << "No hay tableros registrados en la lista.\n";
-            }
-            else {
+            } else {
                 listaTableros.recorrer([](Tablero tablero) {
                     tablero.mostrarInfo();
-                    });
+                });
             }
             Utils::pausar();
             break;
@@ -140,12 +139,7 @@ void menuModuloPinesYCategorias() {
     for (const string& linea : lineasCategorias) {
         vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
         if (datos.size() >= 4 && datos[0] != "idCategoria") {
-            int idCategoria = stoi(datos[0]);
-            string nombre = datos[1];
-            string descripcion = datos[2];
-            int cantidadPines = stoi(datos[3]);
-
-            listaCategorias.insertarFinal(Categoria(idCategoria, nombre, descripcion, cantidadPines));
+            listaCategorias.insertarFinal(Categoria(stoi(datos[0]), datos[1], datos[2], stoi(datos[3])));
         }
     }
 
@@ -154,15 +148,7 @@ void menuModuloPinesYCategorias() {
     for (const string& linea : lineasPines) {
         vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
         if (datos.size() >= 7 && datos[0] != "idPin") {
-            int idPin = stoi(datos[0]);
-            string titulo = datos[1];
-            string descripcion = datos[2];
-            int idTablero = stoi(datos[3]);
-            int idCategoria = stoi(datos[4]);
-            int popularidad = stoi(datos[5]);
-            string fechaCreacion = datos[6];
-
-            listaPines.push_back(Pin(idPin, titulo, descripcion, idTablero, idCategoria, popularidad, fechaCreacion));
+            listaPines.push_back(Pin(stoi(datos[0]), datos[1], datos[2], stoi(datos[3]), stoi(datos[4]), stoi(datos[5]), datos[6]));
         }
     }
 
@@ -310,7 +296,7 @@ void menuModuloPinesYCategorias() {
             break;
         }
         case 3:
-            cout << "\n[En desarrollo por Integrante 2]\n";
+            cout << "\n[Pendiente: Implementacion de MergeSort por Integrante 2]\n";
             Utils::pausar();
             break;
         case 4: {
@@ -451,7 +437,10 @@ void menuModuloRecomendaciones() {
         case 4: {
             Utils::limpiarPantalla();
             cout << "--- REPORTE / METRICAS DE COLA DE RECOMENDACIONES ---\n";
-            cout << "Cantidad de recomendaciones en espera: " << colaRecomendaciones.getCantidad() << "\n\n";
+            cout << "Cantidad de recomendaciones en espera: " << colaRecomendaciones.getCantidad() << "\n";
+            float promedioScore = colaRecomendaciones.promedio([](Recomendacion r) { return r.getPuntuacion(); });
+            cout << "Promedio de puntuaciones en cola: " << promedioScore << "\n\n";
+
             if (colaRecomendaciones.esVacia()) {
                 cout << "La cola se encuentra vacia.\n";
             } else {
