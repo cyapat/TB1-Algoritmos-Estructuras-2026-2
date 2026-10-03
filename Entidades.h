@@ -90,44 +90,55 @@ public:
 class Pin {
 private:
     int idPin;
-    int idTablero;
     string titulo;
-    string urlImagen;
-    int guardados;
+    string descripcion;
+    int idTablero;
+    int idCategoria;
+    int popularidad;
+    string fechaCreacion;
 
 public:
     Pin() {
         idPin = 0;
-        idTablero = 0;
         titulo = "";
-        urlImagen = "";
-        guardados = 0;
+        descripcion = "";
+        idTablero = 0;
+        idCategoria = 0;
+        popularidad = 0;
+        fechaCreacion = "";
     }
 
-    Pin(int id, int idTab, string tit, string url, int g) {
+    Pin(int id, string tit, string desc, int idTab, int idCat, int pop, string fecha) {
         idPin = id;
-        idTablero = idTab;
         titulo = tit;
-        urlImagen = url;
-        guardados = g;
+        descripcion = desc;
+        idTablero = idTab;
+        idCategoria = idCat;
+        popularidad = pop;
+        fechaCreacion = fecha;
     }
 
     int getIdPin() const { return idPin; }
-    int getIdTablero() const { return idTablero; }
     string getTitulo() const { return titulo; }
-    string getUrlImagen() const { return urlImagen; }
-    int getGuardados() const { return guardados; }
+    string getDescripcion() const { return descripcion; }
+    int getIdTablero() const { return idTablero; }
+    int getIdCategoria() const { return idCategoria; }
+    int getPopularidad() const { return popularidad; }
+    string getFechaCreacion() const { return fechaCreacion; }
 
     void setIdPin(int id) { idPin = id; }
-    void setIdTablero(int idTab) { idTablero = idTab; }
     void setTitulo(string tit) { titulo = tit; }
-    void setUrlImagen(string url) { urlImagen = url; }
-    void setGuardados(int g) { guardados = g; }
+    void setDescripcion(string desc) { descripcion = desc; }
+    void setIdTablero(int idTab) { idTablero = idTab; }
+    void setIdCategoria(int idCat) { idCategoria = idCat; }
+    void setPopularidad(int pop) { popularidad = pop; }
+    void setFechaCreacion(string fecha) { fechaCreacion = fecha; }
 
     void mostrarInfo() const {
         cout << "[Pin #" << idPin << "] "
-             << titulo << " | Guardados: " << guardados
-             << " | URL: " << urlImagen << "\n";
+             << titulo << " | Popularidad: " << popularidad
+             << " | Tablero ID: " << idTablero
+             << " | Cat ID: " << idCategoria << "\n";
     }
 };
 

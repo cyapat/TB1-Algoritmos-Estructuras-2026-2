@@ -1,3 +1,9 @@
 idPin,titulo,descripcion,idTablero,idCategoria,popularidad,fechaCreacion
-1,Pasta casera,Receta visual de pasta,1,COMIDA,86,2026-09-10
-2,Sala minimalista,Decoracion limpia y moderna,2,DECOR,73,2026-09-11
+1,Pasta casera,Receta visual de pasta,1,1,86,2026-09-10
+2,Sala minimalista,Decoracion limpia y moderna,2,2,73,2026-09-11
+3,Tacos al pastor,Paso a paso para tacos caseros,1,1,120,2026-09-12
+4,Escritorio RGB,Setup minimalista de trabajo,5,4,45,2026-09-13
+5,Look casual primavera,Combinacion de ropa urbana,3,3,200,2026-09-14
+6,Dormitorio pequeno,Aprovechamiento de espacio,4,2,15,2026-09-15
+7,Postre de limon,Receta rapida en copa,1,1,95,2026-09-16
+8,Lampara vintage,Iluminacion retro para estudio,2,2,60,2026-09-17

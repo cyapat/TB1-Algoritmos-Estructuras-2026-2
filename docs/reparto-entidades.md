@@ -47,12 +47,12 @@ Este reparto sale del documento de entidades enviado para el sistema tipo Pinter
    - titulo: string
    - descripcion: string
    - idTablero: int
-   - idCategoria: string
+   - idCategoria: int
    - popularidad: int
    - fechaCreacion: string
 
 7. Categoria
-   - idCategoria: string
+   - idCategoria: int
    - nombre: string
    - descripcion: string
    - cantidadPines: int
@@ -95,7 +95,7 @@ Este reparto sale del documento de entidades enviado para el sistema tipo Pinter
 13. PreferenciaUsuario
     - idPreferencia: int
     - idUsuario: int
-    - idCategoria: string
+   - idCategoria: int
     - nivelInteres: int
 
 14. TendenciaDiaria

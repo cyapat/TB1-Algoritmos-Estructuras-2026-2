@@ -1,3 +1,6 @@
 idUsuario,nombre,username,correo,fechaRegistro
 1,Ana Torres,atorres,ana@example.com,2026-09-01
 2,Luis Ramos,lramos,luis@example.com,2026-09-02
+3,Carlos Lopez,clopez,carlos@example.com,2026-09-03
+4,Maria Gomez,mgomez,maria@example.com,2026-09-04
+5,Juan Perez,jperez,juan@example.com,2026-09-05

@@ -1,3 +1,6 @@
 idTablero,nombre,idUsuario,descripcion,esPublico,cantidadPines,fechaCreacion
-1,Ideas de cocina,1,Recetas y preparaciones faciles,1,12,2026-09-05
-2,Diseno de interiores,2,Inspiracion para espacios pequenos,1,8,2026-09-06
+1,Ideas de cocina,1,Recetas y preparaciones faciles,1,3,2026-09-05
+2,Diseno de interiores,2,Inspiracion para espacios pequenos,1,2,2026-09-06
+3,Outfits Verano,3,Moda y ropa casual,0,1,2026-09-07
+4,Decoracion Minimalista,4,Ideas simples y modernas,1,1,2026-09-08
+5,Tecnologia y Setup,5,Escritorios y gadgets,1,1,2026-09-09
