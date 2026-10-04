@@ -2,8 +2,9 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
-// Cabeceras base e infraestructura del proyecto
+// Cabeceras base del proyecto
 #include "Entidades.h"
 #include "Nodo.h"
 #include "ListaSimple.h"
@@ -19,15 +20,15 @@ using namespace std;
 // ==========================================
 
 // Integrante 1: Usuarios y Tableros
-// ==========================================
-// Integrante 1: Usuarios y Tableros (Persona 1)
-// ==========================================
 
-// Algoritmo de Ordenamiento Avanzado: QuickSort para ordenar Tableros por ID
+// Funcion para ordenar los tableros por su ID usando QuickSort
 void quickSortTableros(vector<Tablero>& tableros, int izquierda, int derecha) {
+    if (izquierda >= derecha) return;
+
     int i = izquierda;
     int j = derecha;
-    int pivote = tableros[(izquierda + derecha) / 2].getIdTablero();
+    // Tomamos el elemento central como pivote
+    int pivote = tableros[izquierda + (derecha - izquierda) / 2].getIdTablero();
 
     while (i <= j) {
         while (tableros[i].getIdTablero() < pivote) i++;
@@ -40,6 +41,7 @@ void quickSortTableros(vector<Tablero>& tableros, int izquierda, int derecha) {
         }
     }
 
+    // Llamadas recursivas para las dos sublistas
     if (izquierda < j) quickSortTableros(tableros, izquierda, j);
     if (i < derecha) quickSortTableros(tableros, i, derecha);
 }
@@ -48,15 +50,16 @@ void menuModuloUsuariosYTableros() {
     ListaSimple<Tablero> listaTableros;
     int opcion = -1;
 
-    // Cargar datos desde el archivo CSV
+    // Cargar los tableros guardados en el CSV al iniciar
     vector<string> lineasTableros = GestorArchivos::leerLineas("data/tableros.csv");
     for (const string& linea : lineasTableros) {
         vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
+        // Validamos que la linea no sea la cabecera y tenga las columnas correctas
         if (datos.size() >= 4 && datos[0] != "idTablero") {
             int idTablero = stoi(datos[0]);
-            int idUsuario = datos.size() > 4 ? stoi(datos[2]) : stoi(datos[1]);
-            string nombre = datos.size() > 4 ? datos[1] : datos[2];
-            bool esPrivado = datos.size() > 4 ? datos[4] != "1" : datos[3] == "1";
+            string nombre = datos[1];
+            int idUsuario = stoi(datos[2]);
+            bool esPrivado = (datos[3] == "1");
             listaTableros.insertarFinal(Tablero(idTablero, idUsuario, nombre, esPrivado));
         }
     }
@@ -64,7 +67,7 @@ void menuModuloUsuariosYTableros() {
     do {
         Utils::limpiarPantalla();
         cout << "========================================\n";
-        cout << "   MODULO 1: USUARIOS Y TABLEROS (Persona 1)\n";
+        cout << "    MODULO 1: USUARIOS Y TABLEROS (Persona 1)\n";
         cout << "========================================\n";
         cout << "1. Registrar usuario\n";
         cout << "2. Crear nuevo tablero (Lista Simple)\n";
@@ -87,11 +90,11 @@ void menuModuloUsuariosYTableros() {
             string nombre, email;
             cout << "--- REGISTRAR USUARIO ---\n";
             cout << "ID Usuario: "; cin >> id;
-            Utils::limpiarEntrada();
+            Utils::limpiarEntrada(); // Limpiamos el buffer para que no se salte el getline
             cout << "Nombre: "; getline(cin, nombre);
             cout << "Email: "; getline(cin, email);
 
-            string lineaCSV = to_string(id) + "," + nombre + ",," + email + ",";
+            string lineaCSV = to_string(id) + "," + nombre + "," + email;
             if (GestorArchivos::guardarLinea("data/usuarios.csv", lineaCSV)) {
                 cout << "\n[OK] Usuario guardado con exito en CSV.\n";
             } else {
@@ -111,9 +114,11 @@ void menuModuloUsuariosYTableros() {
             cout << "Nombre del Tablero: "; getline(cin, nombre);
             cout << "Es privado? (1 = Si, 0 = No): "; cin >> esPrivado;
 
-            listaTableros.insertarFinal(Tablero(idTablero, idUsuario, nombre, esPrivado == 1));
-            string lineaCSV = to_string(idTablero) + "," + nombre + "," + to_string(idUsuario)
-                + ",," + to_string(esPrivado == 0 ? 1 : 0) + ",0,";
+            bool privadoBool = (esPrivado == 1);
+            listaTableros.insertarFinal(Tablero(idTablero, idUsuario, nombre, privadoBool));
+
+            // Guardamos con el formato exacto del CSV: idTablero,nombre,idUsuario,esPrivado
+            string lineaCSV = to_string(idTablero) + "," + nombre + "," + to_string(idUsuario) + "," + string(privadoBool ? "1" : "0");
             GestorArchivos::guardarLinea("data/tableros.csv", lineaCSV);
 
             cout << "\n[OK] Tablero insertado en ListaSimple y guardado en CSV.\n";
@@ -126,7 +131,6 @@ void menuModuloUsuariosYTableros() {
             if (listaTableros.esVacia()) {
                 cout << "No hay tableros registrados en la lista.\n";
             } else {
-                // LAMBDA 1: Recorrer e imprimir tableros
                 listaTableros.recorrer([](Tablero tablero) {
                     tablero.mostrarInfo();
                 });
@@ -139,13 +143,13 @@ void menuModuloUsuariosYTableros() {
             if (listaTableros.esVacia()) {
                 cout << "No hay tableros para ordenar.\n";
             } else {
-                // Copiar de la lista simple a vector para aplicar QuickSort
+                // Pasamos los elementos de la ListaSimple a un vector temporal para pasarlo al QuickSort
                 vector<Tablero> vecTableros;
                 listaTableros.recorrer([&vecTableros](Tablero t) {
                     vecTableros.push_back(t);
                 });
 
-                quickSortTableros(vecTableros, 0, vecTableros.size() - 1);
+                quickSortTableros(vecTableros, 0, static_cast<int>(vecTableros.size()) - 1);
 
                 cout << "[OK] Tableros ordenados por ID mediante QuickSort:\n\n";
                 for (const auto& t : vecTableros) {
@@ -159,12 +163,11 @@ void menuModuloUsuariosYTableros() {
             Utils::limpiarPantalla();
             cout << "--- METRICAS DE TABLEROS (USO DE LAMBDAS - PERSONA 1) ---\n";
             
-            // LAMBDA 2: Contar tableros que son privados
+            // Usamos funciones lambda para filtrar los tableros
             int privados = listaTableros.contarSi([](Tablero t) {
                 return t.getEsPrivado();
             });
 
-            // LAMBDA 3: Contar tableros que son públicos
             int publicos = listaTableros.contarSi([](Tablero t) {
                 return !t.getEsPrivado();
             });
@@ -183,8 +186,7 @@ void menuModuloUsuariosYTableros() {
             for (const string& linea : lineasUsuarios) {
                 vector<string> usuario = GestorArchivos::dividirLinea(linea, ',');
                 if (usuario.size() >= 3 && usuario[0] != "idUsuario") {
-                    string email = usuario.size() >= 4 ? usuario[3] : usuario[2];
-                    Usuario usuarioActual(stoi(usuario[0]), usuario[1], email);
+                    Usuario usuarioActual(stoi(usuario[0]), usuario[1], usuario[2]);
                     usuarioActual.mostrarInfo();
                 }
             }
@@ -202,6 +204,8 @@ void menuModuloUsuariosYTableros() {
 }
 
 // Integrante 2: Pines y Categorías
+
+// Funcion auxiliar para juntar las mitades en MergeSort de mayor a menor
 void mezclarPines(vector<Pin>& pines, int izquierda, int medio, int derecha) {
     int n1 = medio - izquierda + 1;
     int n2 = derecha - medio;
@@ -214,7 +218,7 @@ void mezclarPines(vector<Pin>& pines, int izquierda, int medio, int derecha) {
 
     int i = 0, j = 0, k = izquierda;
 
-    // Ordenamiento descendente por Popularidad (de mayor a menor)
+    // Ordenamos de mayor popularidad a menor
     while (i < n1 && j < n2) {
         if (izq[i].getPopularidad() >= der[j].getPopularidad()) {
             pines[k] = izq[i];
@@ -239,6 +243,7 @@ void mezclarPines(vector<Pin>& pines, int izquierda, int medio, int derecha) {
     }
 }
 
+// Algoritmo MergeSort para ordenar pines por su nivel de popularidad
 void mergeSortPines(vector<Pin>& pines, int izquierda, int derecha) {
     if (izquierda < derecha) {
         int medio = izquierda + (derecha - izquierda) / 2;
@@ -249,11 +254,12 @@ void mergeSortPines(vector<Pin>& pines, int izquierda, int derecha) {
         mezclarPines(pines, izquierda, medio, derecha);
     }
 }
+
 void menuModuloPinesYCategorias() {
     ListaDoble<Categoria> listaCategorias;
     vector<Pin> listaPines;
 
-    // Cargar categorias desde categorias.csv
+    // Cargar las categorias registradas al iniciar el modulo
     vector<string> lineasCategorias = GestorArchivos::leerLineas("data/categorias.csv");
     for (const string& linea : lineasCategorias) {
         vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
@@ -262,7 +268,7 @@ void menuModuloPinesYCategorias() {
         }
     }
 
-    // Cargar pines desde pines.csv
+    // Cargar los pines guardados al iniciar
     vector<string> lineasPines = GestorArchivos::leerLineas("data/pines.csv");
     for (const string& linea : lineasPines) {
         vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
@@ -275,7 +281,7 @@ void menuModuloPinesYCategorias() {
     do {
         Utils::limpiarPantalla();
         cout << "========================================\n";
-        cout << "   MODULO 2: PINES Y CATEGORIAS\n";
+        cout << "    MODULO 2: PINES Y CATEGORIAS\n";
         cout << "========================================\n";
         cout << "1. Agregar categoria (Lista Doble)\n";
         cout << "2. Agregar Pin a una categoria\n";
@@ -304,6 +310,7 @@ void menuModuloPinesYCategorias() {
             }
             Utils::limpiarEntrada();
 
+            // Verificamos que no se repitan los ID de las categorias
             bool categoriaExiste = false;
             listaCategorias.recorrer([&](Categoria categoria) {
                 if (categoria.getIdCategoria() == idCategoria) {
@@ -345,6 +352,7 @@ void menuModuloPinesYCategorias() {
                 cout << "ID Pin: ";
             }
 
+            // Validacion de ID de Pin unico
             bool pinExiste = false;
             for (const Pin& pin : listaPines) {
                 if (pin.getIdPin() == idPin) {
@@ -367,6 +375,7 @@ void menuModuloPinesYCategorias() {
                 cout << "ID Categoria (numero): ";
             }
 
+            // Comprobar que la categoria a asignar exista realmente
             bool categoriaExiste = false;
             listaCategorias.recorrer([&](Categoria categoria) {
                 if (categoria.getIdCategoria() == idCategoria) {
@@ -414,15 +423,15 @@ void menuModuloPinesYCategorias() {
             Utils::pausar();
             break;
         }
-    case 3: {
+        case 3: {
             Utils::limpiarPantalla();
             cout << "--- ORDENAR PINES POR POPULARIDAD (MERGESORT - PERSONA 2) ---\n\n";
             
             if (listaPines.empty()) {
                 cout << "No hay pines registrados para ordenar.\n";
             } else {
-                // Aplicar el algoritmo MergeSort sobre el vector de pines
-                mergeSortPines(listaPines, 0, listaPines.size() - 1);
+                // Pasamos el rango valido para evitar desbordamientos de memoria
+                mergeSortPines(listaPines, 0, static_cast<int>(listaPines.size()) - 1);
 
                 cout << "[OK] Pines ordenados exitosamente de MAYOR a MENOR popularidad:\n\n";
                 for (const auto& pin : listaPines) {
@@ -436,19 +445,20 @@ void menuModuloPinesYCategorias() {
             Utils::limpiarPantalla();
             cout << "--- CARGAR DATOS DESDE CSV ---\n\n";
 
+            // Limpiamos los contenedores antes de recargar
             listaCategorias.limpiar();
             listaPines.clear();
 
-            vector<string> lineasCategorias = GestorArchivos::leerLineas("data/categorias.csv");
-            for (const string& linea : lineasCategorias) {
+            vector<string> lineasCat = GestorArchivos::leerLineas("data/categorias.csv");
+            for (const string& linea : lineasCat) {
                 vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
                 if (datos.size() >= 4 && datos[0] != "idCategoria") {
                     listaCategorias.insertarFinal(Categoria(stoi(datos[0]), datos[1], datos[2], stoi(datos[3])));
                 }
             }
 
-            vector<string> lineasPines = GestorArchivos::leerLineas("data/pines.csv");
-            for (const string& linea : lineasPines) {
+            vector<string> lineasPin = GestorArchivos::leerLineas("data/pines.csv");
+            for (const string& linea : lineasPin) {
                 vector<string> datos = GestorArchivos::dividirLinea(linea, ',');
                 if (datos.size() >= 7 && datos[0] != "idPin") {
                     listaPines.push_back(Pin(stoi(datos[0]), datos[1], datos[2], stoi(datos[3]), stoi(datos[4]), stoi(datos[5]), datos[6]));
@@ -479,11 +489,15 @@ void menuModuloPinesYCategorias() {
 }
 
 // Integrante 3: Recomendaciones y Métricas
+
+// Funcion recursiva para calcular la similitud segun la categoria y popularidad
 float calcularSimilitudRecursiva(int difCategoria, int difPopularidad, int paso = 0) {
+    // Caso base / Primer paso: Evaluamos coincidencia de categoria
     if (paso == 0) {
         float scoreCat = (difCategoria == 0) ? 50.0f : 10.0f;
         return scoreCat + calcularSimilitudRecursiva(difCategoria, difPopularidad, 1);
     } 
+    // Segundo paso: Restamos puntos por la diferencia de popularidad
     if (paso == 1) {
         float scorePop = 50.0f - (difPopularidad * 2.0f);
         if (scorePop < 0) scorePop = 0;
@@ -493,13 +507,14 @@ float calcularSimilitudRecursiva(int difCategoria, int difPopularidad, int paso 
 }
 
 void menuModuloRecomendaciones() {
+    // 'static' para mantener el estado de la cola mientras la aplicacion este abierta
     static Cola<Recomendacion> colaRecomendaciones;
     int opcion = -1;
 
     do {
         Utils::limpiarPantalla();
         cout << "========================================\n";
-        cout << "   MODULO 3: RECOMENDACIONES Y METRICAS\n";
+        cout << "    MODULO 3: RECOMENDACIONES Y METRICAS\n";
         cout << "========================================\n";
         cout << "1. Encolar recomendacion (Cola)\n";
         cout << "2. Procesar siguiente recomendacion\n";
@@ -599,14 +614,14 @@ void menuModuloRecomendaciones() {
 
 void mostrarEncabezado() {
     cout << "========================================\n";
-    cout << "   TB1 Pinterest - AED 2026-2\n";
+    cout << "    TB1 Pinterest - AED 2026-2\n";
     cout << "========================================\n";
 }
 
 void mostrarRequisitos() {
     Utils::limpiarPantalla();
     cout << "========================================\n";
-    cout << "   REQUISITOS DEL PROYECTO PINTEREST\n";
+    cout << "    REQUISITOS DEL PROYECTO PINTEREST\n";
     cout << "========================================\n";
     cout << "- Lista simple: Administracion de Tableros (Int. 1)\n";
     cout << "- Lista doble: Administracion de Categorias (Int. 2)\n";
