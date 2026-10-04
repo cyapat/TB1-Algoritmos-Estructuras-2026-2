@@ -1,4 +1,3 @@
-
 #ifndef GESTOR_ARCHIVOS_H
 #define GESTOR_ARCHIVOS_H
 
@@ -38,7 +37,7 @@ public:
             archivo.close();
         }
         else {
-            cout << "[Aviso] No se pudo abrir el archivo o esta vacio: " << rutaArchivo << "\n";
+            cout << "[Aviso] No se pudo abrir el archivo: " << rutaArchivo << "\n";
         }
         return lineas;
     }
@@ -52,6 +51,29 @@ public:
             return true;
         }
         return false;
+    }
+
+    // Sobrescribe completamente un archivo con las lineas indicadas.
+    // Se utiliza, por ejemplo, cuando se procesa una recomendacion de la cola.
+    static bool sobrescribirLineas(const string& rutaArchivo, const vector<string>& lineas) {
+        ofstream archivo(rutaArchivo, ios::trunc);
+        if (!archivo.is_open()) {
+            return false;
+        }
+
+        for (const string& linea : lineas) {
+            archivo << linea << "\n";
+        }
+
+        archivo.close();
+        return true;
+    }
+
+    static bool existeArchivo(const string& rutaArchivo) {
+        ifstream archivo(rutaArchivo);
+        bool existe = archivo.good();
+        archivo.close();
+        return existe;
     }
 };
 
